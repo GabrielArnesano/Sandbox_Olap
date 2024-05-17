@@ -5,21 +5,62 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class InmutableCube{
-    private Map<String, Dimension> dimensionMap;
-    private Facts facts;
+public final class InmutableCube{
+    private final Map<String, Dimension> dimensionMap;
+    private final Facts facts;
+    private final String cubeName;
 
 
-    public InmutableCube() {
+    public InmutableCube(String cubeName) {
+        this.cubeName = cubeName;
         dimensionMap = new HashMap<>();
+        facts = null;
     }
 
-    public void addDimension(String name, Dimension dimension) {
-        dimensionMap.put(name, dimension);
+    public InmutableCube(String cubeName, Map<String, Dimension> map){
+        //usamos un mapa para guardar las dimensiones y acceder luego a ellas
+        this.cubeName = cubeName;
+        dimensionMap = new HashMap<>();
+        //por cada nombre y dimension en el mapa, se agrega la dimension al cubo
+        map.forEach((name, dimension) -> {
+            dimensionMap.put(name, dimension);
+        });
+        facts = null;
     }
 
-    public void addFacts(Facts facts) {
+    public InmutableCube(String cubeName, Map<String, Dimension> map, Facts facts){
+        this.cubeName = cubeName;
+        dimensionMap = new HashMap<>();
+        //por cada nombre y dimension en el mapa, se agrega la dimension al cubo
+        map.forEach((name, dimension) -> {
+            dimensionMap.put(name, dimension);
+        });
         this.facts = facts;
+    }
+
+    public InmutableCube addDimension(String name, Dimension dimension) {
+        Map<String, Dimension> mapa = new HashMap<>();
+        //por cada nombre y dim anterior en el mapa, se agrega la dimension al cubo
+        dimensionMap.forEach((nameOld, dimensionOld) -> {
+            mapa.put(nameOld, dimensionOld);
+        });
+        //agrego nueva dimension
+        mapa.put(name, dimension);
+        return new InmutableCube(cubeName, mapa);
+    }
+
+    public InmutableCube addFacts(Facts facts) {
+        Map<String, Dimension> mapa = new HashMap<>();
+        //por cada nombre y dim anterior en el mapa, se agrega la dimension al cubo
+        dimensionMap.forEach((nameOld, dimensionOld) -> {
+            mapa.put(nameOld, dimensionOld);
+        });
+        // agrego fact tambien 
+        return new InmutableCube(cubeName, mapa, facts);
+    }
+
+    public String getCubeName() {
+        return this.cubeName;
     }
 
     public Set<String> getDimensionNames() {
